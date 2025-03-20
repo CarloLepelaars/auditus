@@ -5,5 +5,4 @@ d = { 'settings': { 'branch': 'main',
                 'doc_host': 'https://CarloLepelaars.github.io',
                 'git_url': 'https://github.com/CarloLepelaars/auditus',
                 'lib_path': 'auditus'},
-  'syms': { 'auditus.core': { 'auditus.core.foo': ('core.html#foo', 'auditus/core.py'),
-                              'auditus.core.say_hello': ('core.html#say_hello', 'auditus/core.py')}}}
+  'syms': {'auditus.core': {'auditus.core.foo': ('core.html#foo', 'auditus/core.py')}}}
