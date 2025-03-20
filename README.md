@@ -51,14 +51,6 @@ find package manager specific guidelines on
 # model = AudioTransformer("MIT/ast-finetuned-audioset-10-10-0.4593")
 ```
 
-    ModuleNotFoundError: No module named 'auditus'
-    [0;31m---------------------------------------------------------------------------[0m
-    [0;31mModuleNotFoundError[0m                       Traceback (most recent call last)
-    Cell [0;32mIn[3], line 1[0m
-    [0;32m----> 1[0m [38;5;28;01mfrom[39;00m [38;5;21;01mauditus[39;00m [38;5;28;01mimport[39;00m AudioTransformer
-
-    [0;31mModuleNotFoundError[0m: No module named 'auditus'
-
 ``` python
 # audio = load_audio("../test_files/XC119042.ogg")
 # embeddings = model.encode(audio)
