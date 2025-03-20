@@ -1,0 +1,9 @@
+project:
+  output-dir: _docs
+
+website:
+  title: "auditus"
+  site-url: "https://CarloLepelaars.github.io/auditus"
+  description: "Simple Audio Embeddings"
+  repo-branch: main
+  repo-url: "https://github.com/CarloLepelaars/auditus"
