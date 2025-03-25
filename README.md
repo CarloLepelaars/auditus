@@ -48,8 +48,7 @@ Simply load audio with a given sampling rate.
 ``` python
 from auditus.transform import AudioLoader
 
-loader = AudioLoader(sr=32000)
-audio = loader("../test_files/XC119042.ogg")
+audio = AudioLoader(sr=32000)("../test_files/XC119042.ogg")
 audio
 ```
 
@@ -101,10 +100,9 @@ for more information on the available parameters.
 ``` python
 from auditus.transform import AudioEmbedding
 
-embedding = AudioEmbedding(return_tensors="pt", num_mel_bins=64, sampling_rate=16000)
-embeddings = embedding(resampled)
-print(embeddings.shape)
-embeddings[0][0][:5]
+emb = AudioEmbedding(return_tensors="pt", num_mel_bins=64, sampling_rate=16000)(resampled)
+print(emb.shape)
+emb[0][0][:5]
 ```
 
     torch.Size([1, 1024, 64])
@@ -121,7 +119,7 @@ support `mean` and `max` pooling.
 ``` python
 from auditus.transform import Pooling
 
-pooled = Pooling(pooling="max")(embeddings)
+pooled = Pooling(pooling="max")(emb)
 print(pooled.shape)
 pooled[0][:5]
 ```
