@@ -12,7 +12,7 @@ $ pip install auditus
 
 ## Quickstart
 
-The most high-level object in `auditus` is the
+The high-level object in `auditus` is the
 [`AudioPipeline`](https://CarloLepelaars.github.io/auditus/transform.html#audiopipeline)
 which takes in a path and returns a pooled embedding.
 
@@ -20,11 +20,19 @@ which takes in a path and returns a pooled embedding.
 from auditus.transform import AudioPipeline
 
 pipe = AudioPipeline(
-    model_name="MIT/ast-finetuned-audioset-10-10-0.4593", # Default AST model
-    return_tensors="pt", # PyTorch output
-    target_sr=16000, # Resampled to 16KhZ
-    num_mel_bins=64, # Embedding output of 64
-    pooling="max", # Max pooling
+    # Default AST model
+    model_name="MIT/ast-finetuned-audioset-10-10-0.4593", 
+    # PyTorch output
+    return_tensors="pt", 
+    # Resampled to 16KhZ
+    target_sr=16000, 
+     # Mel-frequency bins is equal to output length for this model.
+    num_mel_bins=64,
+    # 1024 length equals max. ~25.6 seconds with default hop length.
+    # Longer files are truncated.
+    max_length=1024,
+    # Mean pooling to obtain single embedding vector
+    pooling="mean",
 )
 
 output = pipe("../test_files/XC119042.ogg").squeeze(0)
@@ -34,7 +42,7 @@ output[:5]
 
     torch.Size([64])
 
-    tensor([ 0.3470,  0.2991,  0.1366, -0.0023, -0.1394])
+    tensor([-0.0943, -0.1549, -0.2868, -0.3495, -0.4023])
 
 ## Individual steps
 
@@ -114,7 +122,7 @@ emb[0][0][:5]
 After generating the embeddings, you often want to pool the embeddings
 to a single vector.
 [`Pooling`](https://CarloLepelaars.github.io/auditus/transform.html#pooling)
-support `mean` and `max` pooling.
+supports `mean` and `max` pooling.
 
 ``` python
 from auditus.transform import Pooling
