@@ -32,9 +32,6 @@ print(output.shape)
 output[:5]
 ```
 
-    /Users/clepelaars/miniconda3/envs/py312/lib/python3.12/site-packages/tqdm/auto.py:21: TqdmWarning: IProgress not found. Please update jupyter and ipywidgets. See https://ipywidgets.readthedocs.io/en/stable/user_install.html
-      from .autonotebook import tqdm as notebook_tqdm
-
     torch.Size([64])
 
     tensor([ 0.3470,  0.2991,  0.1366, -0.0023, -0.1394])
@@ -62,10 +59,7 @@ audio
 The
 [`AudioArray`](https://CarloLepelaars.github.io/auditus/core.html#audioarray)
 object offers a convenient interface to inspect the audio data. Like
-listening to the audio in Jupyter Notebook with `audio.audio()`. Check
-the [AudioArray
-docs](https://carlolepelaars.github.io/auditus/core.html#audioarray) for
-more information.
+listening to the audio in Jupyter Notebook with `audio.audio()`.
 
 ``` python
 audio.a[:5], audio.sr, len(audio)
@@ -132,7 +126,6 @@ print(pooled.shape)
 pooled[0][:5]
 ```
 
-    (1, 128)
+    torch.Size([1, 64])
 
-    array([ 0.35782743, -0.02581398,  0.3510063 , -1.2775939 ,  0.19045162],
-          dtype=float32)
+    tensor([ 0.3470,  0.2991,  0.1366, -0.0023, -0.1394])
