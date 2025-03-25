@@ -15,6 +15,7 @@ from .core import AudioArray
 
 # %% ../nbs/01_transform.ipynb 7
 class AudioLoader(DisplayedTransform):
+    """Load audio files into an `AudioArray` object."""
     def __init__(self, sr: int = None): store_attr()
     def encodes(self, x:str) -> AudioArray: return self.load_audio(x, self.sr)
 
@@ -24,6 +25,7 @@ class AudioLoader(DisplayedTransform):
 
 # %% ../nbs/01_transform.ipynb 18
 class Resampling(DisplayedTransform):
+    """Resample audio to a given sampling rate."""
     def __init__(self, target_sr: int):
         store_attr()
     def encodes(self, audio: AudioArray) -> AudioArray: return self.process_audio_array(audio)
@@ -39,6 +41,7 @@ class Resampling(DisplayedTransform):
 
 # %% ../nbs/01_transform.ipynb 26
 class AudioEmbedding(DisplayedTransform):
+    """Embed audio using a HuggingFace Audio model."""
     def __init__(self, model_name: str = "MIT/ast-finetuned-audioset-10-10-0.4593", return_tensors: str = "np", **kwargs): 
         store_attr()
         self.model = AutoFeatureExtractor.from_pretrained(model_name, **kwargs)
@@ -48,24 +51,22 @@ class AudioEmbedding(DisplayedTransform):
     def call_model(self, x, sr: int):
         return self.model(x, sampling_rate=sr, return_tensors=self.return_tensors)['input_values']
 
-# %% ../nbs/01_transform.ipynb 38
+# %% ../nbs/01_transform.ipynb 41
 class Pooling(DisplayedTransform):
-    def __init__(self, pooling: str = None):
-        assert pooling in [None, "mean", "max"], "Pooling must be either None (no pooling), 'mean' or 'max'."
+    """Pool embeddings"""
+    def __init__(self, pooling: str):
+        assert pooling in ["mean", "max"], "Pooling must be either None (no pooling), 'mean' or 'max'."
         store_attr()
 
     def encodes(self, x:np.ndarray) -> np.ndarray: 
-        if self.pooling is None: return x
-        elif self.pooling == "mean": return x.mean(axis=1)
+        if self.pooling == "mean": return x.mean(axis=1)
         elif self.pooling == "max": return x.max(axis=1)
 
     def encodes(self, x:torch.Tensor) -> torch.Tensor: 
-        if self.pooling is None: return x
-        # Torch aggregation also returns a tuple with max indices, so we need to unpack it
-        elif self.pooling == "mean": return x.mean(dim=1)[0]
+        if self.pooling == "mean": return x.mean(dim=1)[0]
         elif self.pooling == "max": return x.max(dim=1)[0]
 
-# %% ../nbs/01_transform.ipynb 56
+# %% ../nbs/01_transform.ipynb 58
 class AudioPipeline(Pipeline):
     def __init__(self, 
                  model_name: str = "MIT/ast-finetuned-audioset-10-10-0.4593", 

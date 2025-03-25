@@ -11,6 +11,7 @@ from fastcore.all import *
 
 # %% ../nbs/00_core.ipynb 5
 class AudioArray(BasicRepr): 
+    """Representation for audio data."""
     def __init__(self, a: np.ndarray, sr: int): store_attr()
     @property
     def shape(self): return self.a.shape
