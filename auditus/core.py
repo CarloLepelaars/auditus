@@ -9,11 +9,13 @@ __all__ = ['AudioArray']
 import numpy as np
 from fastcore.all import *
 
-# %% ../nbs/00_core.ipynb 6
+# %% ../nbs/00_core.ipynb 5
 class AudioArray(BasicRepr): 
-    def __init__(self, a: np.array, sr: int): store_attr()
-    def show(self): return Audio(self, rate=self.sr)
+    def __init__(self, a: np.ndarray, sr: int): store_attr()
     @property
     def shape(self): return self.a.shape
+    def audio(self): 
+        from IPython.display import Audio
+        return Audio(self.a, rate=self.sr)
     def __len__(self): return len(self.a)
     def __getitem__(self, idx): return self.a[idx]
