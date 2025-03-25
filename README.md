@@ -6,44 +6,11 @@
 `auditus` gives you simple access to state-of-the-art audio embeddings.
 Like [SentenceTransformers](https://sbert.net/) for audio.
 
-## Developer Guide
-
-If you are new to using `nbdev` here are some useful pointers to get you
-started.
-
-### Install auditus in Development mode
-
-``` sh
-# make sure auditus package is installed in development mode
-$ pip install -e .
-
-# make changes under nbs/ directory
-# ...
-
-# compile to have changes apply to auditus
-$ nbdev_prepare
-```
-
-## Usage
-
-### Installation
-
 ``` sh
 $ pip install auditus
 ```
 
-### Documentation
-
-Documentation can be found hosted on this GitHub
-[repository](https://github.com/CarloLepelaars/auditus)’s
-[pages](https://CarloLepelaars.github.io/auditus/). Additionally you can
-find package manager specific guidelines on
-[conda](https://anaconda.org/CarloLepelaars/auditus) and
-[pypi](https://pypi.org/project/auditus/) respectively.
-
-## How to use
-
-### Quickstart
+## Quickstart
 
 The most high-level object in `auditus` is the
 [`AudioPipeline`](https://CarloLepelaars.github.io/auditus/transform.html#audiopipeline)
@@ -72,12 +39,12 @@ output[:5]
 
     tensor([ 0.3470,  0.2991,  0.1366, -0.0023, -0.1394])
 
-### Individual steps
+## Individual steps
 
 `auditus` offers a range of transforms to process audio for downstream
 tasks.
 
-#### Loading
+### Loading
 
 Simply load audio with a given sampling rate.
 
@@ -116,7 +83,7 @@ audio.a[:5], audio.sr, len(audio)
      32000,
      632790)
 
-#### Resampling
+### Resampling
 
 Many Audio Transformer models work only on a specific sampling rate.
 With
@@ -144,7 +111,7 @@ resampled.audio()
                 </audio>
               &#10;
 
-#### Embedding
+### Embedding
 
 The main transform in `auditus` is the
 [`AudioEmbedding`](https://CarloLepelaars.github.io/auditus/transform.html#audioembedding)
@@ -167,7 +134,7 @@ embeddings[0][0][:5]
 
     tensor([-0.8148, -0.9460, -0.9955, -0.9856, -1.0303])
 
-#### Pooling
+### Pooling
 
 After generating the embeddings, you often want to pool the embeddings
 to a single vector.
