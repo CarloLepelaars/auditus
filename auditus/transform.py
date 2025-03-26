@@ -9,9 +9,8 @@ import numpy as np
 import soundfile as sf
 from fastcore.all import *
 import tensorflow as tf
-
 from fasttransform import DisplayedTransform, Pipeline
-from transformers import AutoFeatureExtractor
+from transformers import AutoModel, AutoProcessor
 
 from .core import AudioArray
 
@@ -44,16 +43,24 @@ class Resampling(DisplayedTransform):
 # %% ../nbs/01_transform.ipynb 26
 class AudioEmbedding(DisplayedTransform):
     """Embed audio using a HuggingFace Audio model."""
-    def __init__(self, model_name: str = "MIT/ast-finetuned-audioset-10-10-0.4593", return_tensors: str = "np", **kwargs): 
+    def __init__(self, model_name: str = "MIT/ast-finetuned-audioset-10-10-0.4593", return_tensors: str = "np"): 
         store_attr()
-        self.model = AutoFeatureExtractor.from_pretrained(model_name, **kwargs)
+        self.processor = AutoProcessor.from_pretrained(model_name)
+        self.model = AutoModel.from_pretrained(model_name)
 
     def encodes(self, x:AudioArray): return self.call_model(x.a, x.sr)
     
     def call_model(self, x, sr: int):
-        return self.model(x, sampling_rate=sr, return_tensors=self.return_tensors)['input_values']
+        inputs = self.processor(x, sampling_rate=sr, return_tensors="pt")
+        with torch.no_grad(): 
+            out = self.model(**inputs)
+        output = out.last_hidden_state.squeeze(0)
+        if self.return_tensors == "np": 
+            return output.numpy()
+        else: 
+            return output
 
-# %% ../nbs/01_transform.ipynb 40
+# %% ../nbs/01_transform.ipynb 38
 class TFAudioEmbedding(DisplayedTransform):
     """Embed audio using a Tensorflow Hub model."""
     def __init__(self, model_name: str): 
@@ -63,7 +70,7 @@ class TFAudioEmbedding(DisplayedTransform):
     def encodes(self, x:AudioArray): 
         return self.model.infer_tf(x.a[np.newaxis, :])['embedding'].numpy()
 
-# %% ../nbs/01_transform.ipynb 47
+# %% ../nbs/01_transform.ipynb 45
 class Pooling(DisplayedTransform):
     """Pool embeddings"""
     def __init__(self, pooling: str):
@@ -80,17 +87,16 @@ class Pooling(DisplayedTransform):
         elif self.pooling == "mean": return x.mean(dim=1)
         elif self.pooling == "max": return x.max(dim=1)[0]
 
-# %% ../nbs/01_transform.ipynb 64
+# %% ../nbs/01_transform.ipynb 62
 class AudioPipeline(Pipeline):
     def __init__(self, 
                  model_name: str = "MIT/ast-finetuned-audioset-10-10-0.4593", 
                  return_tensors: str = "np",
                  target_sr: int = 16_000, 
-                 pooling: str = "max", 
-                 **kwargs):
+                 pooling: str = "mean"):
         super().__init__([
             AudioLoader(),
             Resampling(target_sr),
-            AudioEmbedding(model_name, return_tensors, **kwargs),
+            AudioEmbedding(model_name, return_tensors=return_tensors),
             Pooling(pooling)
         ])

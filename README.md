@@ -26,11 +26,6 @@ pipe = AudioPipeline(
     return_tensors="pt", 
     # Resampled to 16KhZ
     target_sr=16000, 
-     # Mel-frequency bins is equal to output length for this model.
-    num_mel_bins=64,
-    # 1024 length equals max. ~25.6 seconds with default hop length.
-    # Longer files are truncated.
-    max_length=1024,
     # Mean pooling to obtain single embedding vector
     pooling="mean",
 )
@@ -40,9 +35,13 @@ print(output.shape)
 output[:5]
 ```
 
-    torch.Size([64])
+    Using a slow image processor as `use_fast` is unset and a slow processor was saved with this model. `use_fast=True` will be the default behavior in v4.48, even if the model was saved with a slow processor. This will result in minor differences in outputs. You'll still be able to use a slow processor with `use_fast=False`.
+    /Users/clepelaars/miniconda3/envs/py312/lib/python3.12/site-packages/transformers/audio_utils.py:297: UserWarning: At least one mel filter has all zero values. The value for `num_mel_filters` (128) may be set too high. Or, the value for `num_frequency_bins` (256) may be set too low.
+      warnings.warn(
 
-    tensor([-0.0943, -0.1549, -0.2868, -0.3495, -0.4023])
+    torch.Size([1214])
+
+    tensor([0.0139, 0.0156, 0.0410, 0.0316, 0.0380])
 
 To see
 [`AudioPipeline`](https://CarloLepelaars.github.io/auditus/transform.html#audiopipeline)
@@ -114,14 +113,17 @@ for more information on the available parameters.
 ``` python
 from auditus.transform import AudioEmbedding
 
-emb = AudioEmbedding(return_tensors="pt", num_mel_bins=64, sampling_rate=16000)(resampled)
+emb = AudioEmbedding(return_tensors="pt")(resampled)
 print(emb.shape)
-emb[0][0][:5]
+emb[0][:5]
 ```
 
-    torch.Size([1, 1024, 64])
+    /Users/clepelaars/miniconda3/envs/py312/lib/python3.12/site-packages/transformers/audio_utils.py:297: UserWarning: At least one mel filter has all zero values. The value for `num_mel_filters` (128) may be set too high. Or, the value for `num_frequency_bins` (256) may be set too low.
+      warnings.warn(
 
-    tensor([-0.8148, -0.9460, -0.9955, -0.9856, -1.0303])
+    torch.Size([1214, 768])
+
+    tensor([-0.5876,  0.2830, -0.7292,  0.7644, -1.1770])
 
 ### Pooling
 
@@ -135,9 +137,9 @@ from auditus.transform import Pooling
 
 pooled = Pooling(pooling="max")(emb)
 print(pooled.shape)
-pooled[0][:5]
+pooled[:5]
 ```
 
-    torch.Size([1, 64])
+    torch.Size([1214])
 
-    tensor([ 0.3470,  0.2991,  0.1366, -0.0023, -0.1394])
+    tensor([ 4.3941,  4.0540, 12.2640, 11.9167, 13.1519])
