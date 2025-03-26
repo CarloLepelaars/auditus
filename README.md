@@ -44,6 +44,12 @@ output[:5]
 
     tensor([-0.0943, -0.1549, -0.2868, -0.3495, -0.4023])
 
+To see
+[`AudioPipeline`](https://CarloLepelaars.github.io/auditus/transform.html#audiopipeline)
+in action on a practical use case, check out [this Kaggle Notebook for
+the BirdCLEF+ 2025
+competition](https://www.kaggle.com/code/carlolepelaars/generating-audio-embeddings-with-auditus).
+
 ## Individual steps
 
 `auditus` offers a range of transforms to process audio for downstream
