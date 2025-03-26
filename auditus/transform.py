@@ -63,7 +63,7 @@ class TFAudioEmbedding(DisplayedTransform):
     def encodes(self, x:AudioArray): 
         return self.model.infer_tf(x.a[np.newaxis, :])['embedding'].numpy()
 
-# %% ../nbs/01_transform.ipynb 48
+# %% ../nbs/01_transform.ipynb 47
 class Pooling(DisplayedTransform):
     """Pool embeddings"""
     def __init__(self, pooling: str):
@@ -80,7 +80,7 @@ class Pooling(DisplayedTransform):
         elif self.pooling == "mean": return x.mean(dim=1)
         elif self.pooling == "max": return x.max(dim=1)[0]
 
-# %% ../nbs/01_transform.ipynb 65
+# %% ../nbs/01_transform.ipynb 64
 class AudioPipeline(Pipeline):
     def __init__(self, 
                  model_name: str = "MIT/ast-finetuned-audioset-10-10-0.4593", 
