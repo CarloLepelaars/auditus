@@ -36,4 +36,9 @@ d = { 'settings': { 'branch': 'main',
                                                                                  'auditus/transform.py'),
                                    'auditus.transform.Resampling.encodes': ('transform.html#resampling.encodes', 'auditus/transform.py'),
                                    'auditus.transform.Resampling.process_audio_array': ( 'transform.html#resampling.process_audio_array',
-                                                                                         'auditus/transform.py')}}}
+                                                                                         'auditus/transform.py'),
+                                   'auditus.transform.TFAudioEmbedding': ('transform.html#tfaudioembedding', 'auditus/transform.py'),
+                                   'auditus.transform.TFAudioEmbedding.__init__': ( 'transform.html#tfaudioembedding.__init__',
+                                                                                    'auditus/transform.py'),
+                                   'auditus.transform.TFAudioEmbedding.encodes': ( 'transform.html#tfaudioembedding.encodes',
+                                                                                   'auditus/transform.py')}}}
