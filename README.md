@@ -39,9 +39,9 @@ output[:5]
     /Users/clepelaars/miniconda3/envs/py312/lib/python3.12/site-packages/transformers/audio_utils.py:297: UserWarning: At least one mel filter has all zero values. The value for `num_mel_filters` (128) may be set too high. Or, the value for `num_frequency_bins` (256) may be set too low.
       warnings.warn(
 
-    torch.Size([1214])
+    torch.Size([768])
 
-    tensor([0.0139, 0.0156, 0.0410, 0.0316, 0.0380])
+    tensor([0.8653, 1.1659, 0.5956, 0.8498, 0.5322])
 
 To see
 [`AudioPipeline`](https://CarloLepelaars.github.io/auditus/transform.html#audiopipeline)
@@ -140,6 +140,6 @@ print(pooled.shape)
 pooled[:5]
 ```
 
-    torch.Size([1214])
+    torch.Size([768])
 
-    tensor([ 4.3941,  4.0540, 12.2640, 11.9167, 13.1519])
+    tensor([2.8619, 2.7183, 4.1288, 2.6302, 2.2177])

@@ -79,15 +79,15 @@ class Pooling(DisplayedTransform):
 
     def encodes(self, x:np.ndarray) -> np.ndarray: 
         if self.pooling is None: return x
-        elif self.pooling == "mean": return x.mean(axis=1)
-        elif self.pooling == "max": return x.max(axis=1)
+        elif self.pooling == "mean": return x.mean(axis=0)
+        elif self.pooling == "max": return x.max(axis=0)
 
     def encodes(self, x:torch.Tensor) -> torch.Tensor: 
         if self.pooling is None: return x
-        elif self.pooling == "mean": return x.mean(dim=1)
-        elif self.pooling == "max": return x.max(dim=1)[0]
+        elif self.pooling == "mean": return x.mean(dim=0)
+        elif self.pooling == "max": return x.max(dim=0)[0]
 
-# %% ../nbs/01_transform.ipynb 62
+# %% ../nbs/01_transform.ipynb 59
 class AudioPipeline(Pipeline):
     def __init__(self, 
                  model_name: str = "MIT/ast-finetuned-audioset-10-10-0.4593", 
