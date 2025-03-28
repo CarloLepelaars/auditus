@@ -27,17 +27,16 @@ class AudioLoader(DisplayedTransform):
 # %% ../nbs/01_transform.ipynb 18
 class Resampling(DisplayedTransform):
     """Resample audio to a given sampling rate."""
-    def __init__(self, target_sr: int):
-        store_attr()
-    def encodes(self, audio: AudioArray) -> AudioArray: return self.process_audio_array(audio)
+    def __init__(self, target_sr:int): store_attr()
+    def encodes(self, audio:AudioArray) -> AudioArray: return self.process_audio_array(audio)
     
-    def process_audio_array(self, audio: AudioArray) -> AudioArray:
+    def process_audio_array(self, audio:AudioArray) -> AudioArray:
         if audio.sr == self.target_sr: return audio
         indices = np.linspace(0, len(audio.a) - 1, self._new_length(audio, self.target_sr))
         resampled = np.interp(indices, np.arange(len(audio.a)), audio.a)
         return AudioArray(resampled, self.target_sr)
-
-    def _new_length(self, audio: AudioArray, target_sr: int) -> int:
+    
+    def _new_length(self, audio:AudioArray, target_sr:int) -> int:
         return int(len(audio.a) * (target_sr / audio.sr))
 
 # %% ../nbs/01_transform.ipynb 26
@@ -47,23 +46,19 @@ class AudioEmbedding(DisplayedTransform):
         store_attr()
         self.processor = AutoProcessor.from_pretrained(model_name)
         self.model = AutoModel.from_pretrained(model_name)
-
     def encodes(self, x:AudioArray): return self.call_model(x.a, x.sr)
     
-    def call_model(self, x, sr: int):
+    def call_model(self, x, sr:int):
         inputs = self.processor(x, sampling_rate=sr, return_tensors="pt")
         with torch.no_grad(): 
             out = self.model(**inputs)
         output = out.last_hidden_state.squeeze(0)
-        if self.return_tensors == "np": 
-            return output.numpy()
-        else: 
-            return output
+        return output.numpy() if self.return_tensors == "np" else output
 
 # %% ../nbs/01_transform.ipynb 38
 class TFAudioEmbedding(DisplayedTransform):
     """Embed audio using a Tensorflow Hub model."""
-    def __init__(self, model_name: str): 
+    def __init__(self, model_name:str): 
         store_attr()
         self.model = tf.saved_model.load(model_name)
 
@@ -73,7 +68,7 @@ class TFAudioEmbedding(DisplayedTransform):
 # %% ../nbs/01_transform.ipynb 45
 class Pooling(DisplayedTransform):
     """Pool embeddings"""
-    def __init__(self, pooling: str):
+    def __init__(self, pooling:str):
         assert pooling in [None, "mean", "max"], "Pooling must be either None (no pooling), 'mean' or 'max'."
         store_attr()
 

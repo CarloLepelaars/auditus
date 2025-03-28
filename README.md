@@ -35,10 +35,6 @@ print(output.shape)
 output[:5]
 ```
 
-    Using a slow image processor as `use_fast` is unset and a slow processor was saved with this model. `use_fast=True` will be the default behavior in v4.48, even if the model was saved with a slow processor. This will result in minor differences in outputs. You'll still be able to use a slow processor with `use_fast=False`.
-    /Users/clepelaars/miniconda3/envs/py312/lib/python3.12/site-packages/transformers/audio_utils.py:297: UserWarning: At least one mel filter has all zero values. The value for `num_mel_filters` (128) may be set too high. Or, the value for `num_frequency_bins` (256) may be set too low.
-      warnings.warn(
-
     torch.Size([768])
 
     tensor([0.8653, 1.1659, 0.5956, 0.8498, 0.5322])
@@ -70,8 +66,8 @@ audio
 
 The
 [`AudioArray`](https://CarloLepelaars.github.io/auditus/core.html#audioarray)
-object offers a convenient interface to inspect the audio data. Like
-listening to the audio in Jupyter Notebook with `audio.audio()`.
+object offers a convenient interface for audio data. For example, you
+can listen to the audio in Jupyter Notebooks with `audio.audio()`.
 
 ``` python
 audio.a[:5], audio.sr, len(audio)
@@ -117,9 +113,6 @@ emb = AudioEmbedding(return_tensors="pt")(resampled)
 print(emb.shape)
 emb[0][:5]
 ```
-
-    /Users/clepelaars/miniconda3/envs/py312/lib/python3.12/site-packages/transformers/audio_utils.py:297: UserWarning: At least one mel filter has all zero values. The value for `num_mel_filters` (128) may be set too high. Or, the value for `num_frequency_bins` (256) may be set too low.
-      warnings.warn(
 
     torch.Size([1214, 768])
 
