@@ -1,0 +1,122 @@
+[
+  {
+    "objectID": "transform.html",
+    "href": "transform.html",
+    "title": "Transform",
+    "section": "",
+    "text": "from IPython.display import Audio",
+    "crumbs": [
+      "Transform"
+    ]
+  },
+  {
+    "objectID": "transform.html#audioloader-transform",
+    "href": "transform.html#audioloader-transform",
+    "title": "Transform",
+    "section": "AudioLoader Transform",
+    "text": "AudioLoader Transform\nThe AudioLoader transform reads in audio file paths with a given sampling rate. The file is loaded into an AudioArray object, which contains a 1D NumPy array of the audio signal and the sampling rate.\n\nsource\n\nAudioLoader\n\n AudioLoader (sr:int=None)\n\nLoad audio files into an AudioArray object.\nOur test files are .ogg files with a sampling rate of 32kHz (32_000).\n\nsr = 32_000\nal = AudioLoader(sr=sr)\ntest_eq(al.sr, sr)\n\n\ntest_dir = \"../test_files\"\nfile_paths = globtastic(test_dir, file_glob=\"*.ogg\")\nfile_paths\n\n(#2) ['../test_files/H02_20230421_190500.ogg','../test_files/XC119042.ogg']\n\n\n\ntest_path = file_paths[-1]\ntest_path\n\n'../test_files/XC119042.ogg'\n\n\n\n\nstr -&gt; AudioArray\nOur test file is a bird song from Xeno Canto of approximately 20 seconds. The length should be nearly \\(32000 \\times 20 = 640000\\) samples.\n\naudio_arr = al(test_path)\ntest_eq(audio_arr.sr, sr)\ntest_eq(audio_arr.shape, (632790,))\naudio_arr\n\nauditus.core.AudioArray(a=array([-2.64216160e-05, -2.54259703e-05,  5.56615578e-06, ...,\n       -2.03555092e-01, -2.03390077e-01, -2.45199591e-01]), sr=32000)\n\n\n\naudio_arr.audio()\n\n\n                \n                    \n                    Your browser does not support the audio element.",
+    "crumbs": [
+      "Transform"
+    ]
+  },
+  {
+    "objectID": "transform.html#resampling",
+    "href": "transform.html#resampling",
+    "title": "Transform",
+    "section": "Resampling",
+    "text": "Resampling\nThe AST (Audio Transformer) model we use requires 16kHz audio. We can use Resampling to get audio with the correct sampling rate.\n\nsource\n\nResampling\n\n Resampling (target_sr:int)\n\nResample audio to a given sampling rate.\n\ntarget_sr = 16_000\nr = Resampling(target_sr=target_sr)\nr\n\nResampling -- {'target_sr': 16000}\n(enc:1,dec:0)\n\n\nThe new length is:\n\\[l_{new} = l_{old} \\frac{sr_{new}}{sr_{old}}\\]\nwhere \\(l\\) is the NumPy array length and \\(sr\\) is the sampling rate.\nIn our example:\n\\[632790 \\frac{16000}{32000} = 632790 * 0.5 = 316395\\]\n\nexpected_length = 316395\ntest_eq(r._new_length(audio_arr, target_sr), expected_length)\n\n\nresampled = r(audio_arr)\ntest_eq(resampled.sr, target_sr)\ntest_eq(resampled.shape, (expected_length,))\nresampled\n\nauditus.core.AudioArray(a=array([-2.64216160e-05,  5.56613802e-06, -1.35020873e-06, ...,\n       -2.39605007e-01, -2.03555112e-01, -2.45199591e-01]), sr=16000)\n\n\n\nAudio(resampled, rate=target_sr)\n\n\n                \n                    \n                    Your browser does not support the audio element.",
+    "crumbs": [
+      "Transform"
+    ]
+  },
+  {
+    "objectID": "transform.html#audioembedding",
+    "href": "transform.html#audioembedding",
+    "title": "Transform",
+    "section": "AudioEmbedding",
+    "text": "AudioEmbedding\nAudioEmbedding allows us to use Audio models from the HuggingFace Hub as feature extractors. A great baseline model is the Audio SpectrogramTransformer model, which is the default in auditus.\n\nsource\n\nAudioEmbedding\n\n AudioEmbedding (model_name:str='MIT/ast-finetuned-audioset-10-10-0.4593',\n                 return_tensors:str='np')\n\nEmbed audio using a HuggingFace Audio model.\n\nae = AudioEmbedding()\nae.model\n\nUsing a slow image processor as `use_fast` is unset and a slow processor was saved with this model. `use_fast=True` will be the default behavior in v4.48, even if the model was saved with a slow processor. This will result in minor differences in outputs. You'll still be able to use a slow processor with `use_fast=False`.\n/Users/clepelaars/miniconda3/envs/py312/lib/python3.12/site-packages/transformers/audio_utils.py:297: UserWarning: At least one mel filter has all zero values. The value for `num_mel_filters` (128) may be set too high. Or, the value for `num_frequency_bins` (256) may be set too low.\n  warnings.warn(\n\n\nASTModel(\n  (embeddings): ASTEmbeddings(\n    (patch_embeddings): ASTPatchEmbeddings(\n      (projection): Conv2d(1, 768, kernel_size=(16, 16), stride=(10, 10))\n    )\n    (dropout): Dropout(p=0.0, inplace=False)\n  )\n  (encoder): ASTEncoder(\n    (layer): ModuleList(\n      (0-11): 12 x ASTLayer(\n        (attention): ASTSdpaAttention(\n          (attention): ASTSdpaSelfAttention(\n            (query): Linear(in_features=768, out_features=768, bias=True)\n            (key): Linear(in_features=768, out_features=768, bias=True)\n            (value): Linear(in_features=768, out_features=768, bias=True)\n            (dropout): Dropout(p=0.0, inplace=False)\n          )\n          (output): ASTSelfOutput(\n            (dense): Linear(in_features=768, out_features=768, bias=True)\n            (dropout): Dropout(p=0.0, inplace=False)\n          )\n        )\n        (intermediate): ASTIntermediate(\n          (dense): Linear(in_features=768, out_features=3072, bias=True)\n          (intermediate_act_fn): GELUActivation()\n        )\n        (output): ASTOutput(\n          (dense): Linear(in_features=3072, out_features=768, bias=True)\n          (dropout): Dropout(p=0.0, inplace=False)\n        )\n        (layernorm_before): LayerNorm((768,), eps=1e-12, elementwise_affine=True)\n        (layernorm_after): LayerNorm((768,), eps=1e-12, elementwise_affine=True)\n      )\n    )\n  )\n  (layernorm): LayerNorm((768,), eps=1e-12, elementwise_affine=True)\n)\n\n\n\n\nNumPy\nThe default is to return embeddings in NumPy format.\n\nemb = ae(resampled)\ntest_eq(emb.shape, (1214, 768))\nemb[0][:5]\n\narray([-0.5875584 ,  0.2830076 , -0.72917604,  0.7644301 , -1.1770165 ],\n      dtype=float32)\n\n\n\n\nTorch\nOptionally, you can return embeddings as PyTorch tensors.\n\ntorch_ae = AudioEmbedding(return_tensors=\"pt\")\ntorch_emb = torch_ae(resampled)\ntest_eq(torch_emb.shape, torch.Size([1214, 768]))\ntorch_emb[0][:5]\n\ntensor([-0.5876,  0.2830, -0.7292,  0.7644, -1.1770])\n\n\n\n\nCustom model\nAny audio model on the HuggingFace Hub can be used to get audio embeddings. Here we test a custom fine-tuned AST model.\n\ncustom_ae = AudioEmbedding(model_name=\"xpariz10/ast-finetuned-audioset-10-10-0.4593_ft_env_aug_0-2\", return_tensors=\"np\")\ncustom_emb = custom_ae(resampled)\ntest_eq(custom_emb.shape, (1214, 768))\ncustom_emb[0][:5]\n\narray([-0.79336447,  0.17551161, -0.95863634,  0.71531856, -1.04658   ],\n      dtype=float32)",
+    "crumbs": [
+      "Transform"
+    ]
+  },
+  {
+    "objectID": "transform.html#tfaudioembedding",
+    "href": "transform.html#tfaudioembedding",
+    "title": "Transform",
+    "section": "TFAudioEmbedding",
+    "text": "TFAudioEmbedding\nTFAudioEmbedding allows us to use Audio models from the TensorFlow Hub as feature extractors.\n\nsource\n\nTFAudioEmbedding\n\n TFAudioEmbedding (model_name:str)\n\nEmbed audio using a Tensorflow Hub model.\nThis local example model only works on a max. of 5 seconds of audio. We therefore truncate the audio to 5 seconds.\n\nfive_sec_arr = AudioArray(audio_arr.a[:160000], 32000)\n\n\nfive_sec_arr.audio()\n\n\n                \n                    \n                    Your browser does not support the audio element.\n                \n              \n\n\n\ntf_ae = TFAudioEmbedding(\"../test_models/bird-vocalization-classifier-tensorflow2-bird-vocalization-classifier-v8\")\ntf_emb = tf_ae(five_sec_arr)\ntest_eq(tf_emb.shape, (1, 1280))\ntf_emb[0][:5]\n\nWARNING: All log messages before absl::InitializeLog() is called are written to STDERR\nI0000 00:00:1743196317.278296 5032010 service.cc:152] XLA service 0x38f0d7f10 initialized for platform Host (this does not guarantee that XLA will be used). Devices:\nI0000 00:00:1743196317.278327 5032010 service.cc:160]   StreamExecutor device (0): Host, Default Version\n2025-03-28 22:11:57.499461: W tensorflow/compiler/tf2xla/kernels/assert_op.cc:39] Ignoring Assert operator jax2tf_infer_fn_/assert_equal_1/Assert/AssertGuard/Assert\nI0000 00:00:1743196318.484499 5032010 device_compiler.h:188] Compiled cluster using XLA!  This line is logged at most once for the lifetime of the process.\n\n\narray([0.07468231, 0.0335138 , 0.03465324, 0.02102477, 0.0374587 ],\n      dtype=float32)",
+    "crumbs": [
+      "Transform"
+    ]
+  },
+  {
+    "objectID": "transform.html#pooling",
+    "href": "transform.html#pooling",
+    "title": "Transform",
+    "section": "Pooling",
+    "text": "Pooling\nPooling is convenient to convert embeddings to a single vector. auditus supports mean and max pooling.\n\nsource\n\nPooling\n\n Pooling (pooling:str)\n\nPool embeddings\n\nmean_pooled = Pooling(pooling=\"mean\")\nmean_pooled\n\nPooling -- {'pooling': 'mean'}\n(enc:2,dec:0)\n\n\n\ntest_emb = np.array([\n    [0.1, 0.2, 0.1],\n    [0.1, 0.2, 0.9],\n    [0.8, 0.6, 0.0]\n])\ntest_emb.shape\n\n(3, 3)\n\n\nIf pooling=\"mean\", the mean of each embedding is taken.\n\nmean_pooler = Pooling(pooling=\"mean\")\nmean_pooled = mean_pooler(test_emb)\ntest_eq(mean_pooled, np.array([[1/3, 1/3, 1/3]]))\nmean_pooled\n\narray([0.33333333, 0.33333333, 0.33333333])\n\n\nIf pooling=\"max\", the maximum of each embedding is taken.\n\nmax_pooler = Pooling(pooling=\"max\")\nmax_pooled = max_pooler(test_emb)\ntest_eq(max_pooled, np.array([[0.8, 0.6, 0.9]]))\nmax_pooled\n\narray([0.8, 0.6, 0.9])\n\n\nThe Pooler can handle Torch tensors as well.\n\ntorch_emb = torch.tensor(test_emb)\ntorch_pooled = Pooling(pooling=\"mean\").encodes(torch_emb)\ntest_eq(torch_pooled, torch.tensor([[1/3, 1/3, 1/3]], dtype=torch.float64))\ntorch_pooled\n\ntensor([0.3333, 0.3333, 0.3333], dtype=torch.float64)",
+    "crumbs": [
+      "Transform"
+    ]
+  },
+  {
+    "objectID": "transform.html#pipeline",
+    "href": "transform.html#pipeline",
+    "title": "Transform",
+    "section": "Pipeline",
+    "text": "Pipeline\nWe can now compose a pipeline that loads an audio file with a sampling rate of 32kHz, resamples it to 16kHz, embeds it and max-pools the result.\n\npipe = Pipeline([al, r, ae, max_pooler])\n\n\nemb = pipe(test_path)\ntest_eq(emb.shape, (768,))\nemb[:5]\n\narray([2.8618667, 2.7183478, 4.1287794, 2.6301968, 2.2177424],\n      dtype=float32)\n\n\nFor convenience, we create an AudioPipeline that processed audio end-to-end. From an audio file path to a single vector embedding.\n\nsource\n\nAudioPipeline\n\n AudioPipeline (model_name:str='MIT/ast-finetuned-audioset-10-10-0.4593',\n                return_tensors:str='np', target_sr:int=16000,\n                pooling:str='mean')\n\nA pipeline of composed (for encode/decode) transforms, setup with types\n\npipe = AudioPipeline(return_tensors=\"pt\")\nemb = pipe(test_path)\ntest_eq(emb.shape, torch.Size([768]))\nemb[:5]\n\n/Users/clepelaars/miniconda3/envs/py312/lib/python3.12/site-packages/transformers/audio_utils.py:297: UserWarning: At least one mel filter has all zero values. The value for `num_mel_filters` (128) may be set too high. Or, the value for `num_frequency_bins` (256) may be set too low.\n  warnings.warn(\n\n\ntensor([0.8653, 1.1659, 0.5956, 0.8498, 0.5322])\n\n\nTo process multiple audio files at once, we can call the AudioPipeline on each file path and stack the results.\n\n# Multiple audio files in Torch\nmulti_emb = torch.stack([pipe(f).squeeze(0) for f in file_paths])\ntest_eq(multi_emb.shape, torch.Size([2, 768]))\nmulti_emb[:, :5]\n\ntensor([[1.1501, 0.5910, 0.4068, 0.6158, 0.5433],\n        [0.8653, 1.1659, 0.5956, 0.8498, 0.5322]])\n\n\n\n# Multiple audio files in NumPy\npipe = AudioPipeline(return_tensors=\"np\")\nmulti_emb = np.stack([pipe(f) for f in file_paths])\ntest_eq(multi_emb.shape, (2, 768))\nmulti_emb[:, :5]\n\narray([[1.1501473 , 0.5909629 , 0.40684646, 0.61581504, 0.5432954 ],\n       [0.8652818 , 1.1659273 , 0.5955627 , 0.84978944, 0.53222984]],\n      dtype=float32)",
+    "crumbs": [
+      "Transform"
+    ]
+  },
+  {
+    "objectID": "index.html",
+    "href": "index.html",
+    "title": "auditus",
+    "section": "",
+    "text": "auditus gives you simple access to state-of-the-art audio embeddings. Like SentenceTransformers for audio.",
+    "crumbs": [
+      "auditus"
+    ]
+  },
+  {
+    "objectID": "index.html#quickstart",
+    "href": "index.html#quickstart",
+    "title": "auditus",
+    "section": "Quickstart",
+    "text": "Quickstart\nThe high-level object in auditus is the AudioPipeline which takes in a path and returns a pooled embedding.\n\nfrom auditus.transform import AudioPipeline\n\npipe = AudioPipeline(\n    # Default AST model\n    model_name=\"MIT/ast-finetuned-audioset-10-10-0.4593\", \n    # PyTorch output\n    return_tensors=\"pt\", \n    # Resampled to 16KhZ\n    target_sr=16000, \n    # Mean pooling to obtain single embedding vector\n    pooling=\"mean\",\n)\n\noutput = pipe(\"../test_files/XC119042.ogg\").squeeze(0)\nprint(output.shape)\noutput[:5]\n\ntorch.Size([768])\n\n\ntensor([0.8653, 1.1659, 0.5956, 0.8498, 0.5322])\n\n\nTo see AudioPipeline in action on a practical use case, check out this Kaggle Notebook for the BirdCLEF+ 2025 competition.",
+    "crumbs": [
+      "auditus"
+    ]
+  },
+  {
+    "objectID": "index.html#individual-steps",
+    "href": "index.html#individual-steps",
+    "title": "auditus",
+    "section": "Individual steps",
+    "text": "Individual steps\nauditus offers a range of transforms to process audio for downstream tasks.\n\nLoading\nSimply load audio with a given sampling rate.\n\nfrom auditus.transform import AudioLoader\n\naudio = AudioLoader(sr=32000)(\"../test_files/XC119042.ogg\")\naudio\n\nauditus.core.AudioArray(a=array([-2.64216160e-05, -2.54259703e-05,  5.56615578e-06, ...,\n       -2.03555092e-01, -2.03390077e-01, -2.45199591e-01]), sr=32000)\n\n\nThe AudioArray object offers a convenient interface for audio data. For example, you can listen to the audio in Jupyter Notebooks with audio.audio().\n\naudio.a[:5], audio.sr, len(audio)\n\n(array([-2.64216160e-05, -2.54259703e-05,  5.56615578e-06, -5.17481631e-08,\n        -1.35020821e-06]),\n 32000,\n 632790)\n\n\n\n\nResampling\nMany Audio Transformer models work only on a specific sampling rate. With Resampling you can resample the audio to the desired sampling rate. Here we go from 32kHz to 16kHz.\n\nfrom auditus.transform import Resampling\n\nresampled = Resampling(target_sr=16000)(audio)\nresampled\n\nauditus.core.AudioArray(a=array([-2.64216160e-05,  5.56613802e-06, -1.35020873e-06, ...,\n       -2.39605007e-01, -2.03555112e-01, -2.45199591e-01]), sr=16000)\n\n\n\n\nEmbedding\nThe main transform in auditus is the AudioEmbedding transform. It takes an AudioArray and returns a tensor. Check out the HuggingFace docs for more information on the available parameters.\n\nfrom auditus.transform import AudioEmbedding\n\nemb = AudioEmbedding(return_tensors=\"pt\")(resampled)\nprint(emb.shape)\nemb[0][:5]\n\ntorch.Size([1214, 768])\n\n\ntensor([-0.5876,  0.2830, -0.7292,  0.7644, -1.1770])\n\n\n\n\nPooling\nAfter generating the embeddings, you often want to pool the embeddings to a single vector. Pooling supports mean and max pooling.\n\nfrom auditus.transform import Pooling\n\npooled = Pooling(pooling=\"max\")(emb)\nprint(pooled.shape)\npooled[:5]\n\ntorch.Size([768])\n\n\ntensor([2.8619, 2.7183, 4.1288, 2.6302, 2.2177])",
+    "crumbs": [
+      "auditus"
+    ]
+  },
+  {
+    "objectID": "core.html",
+    "href": "core.html",
+    "title": "core",
+    "section": "",
+    "text": "AudioArray is the main audio representation in auditus. It stores audio data as a NumPy array and the sample rate. It provides utilities for displaying and parsing audio.\n\nsource\n\n\n\n AudioArray (a:numpy.ndarray, sr:int)\n\nRepresentation for audio data.\nHere is an example of a pink noise signal.\n\naa = AudioArray(np.cumsum(np.random.normal(0, 0.01, 32_000*10)), 32_000)\naa\n\nAudioArray(a=array([-0.00378457, -0.01689089, -0.01994183, ...,  2.81427755,\n        2.81123667,  2.8191368 ]), sr=32000)\n\n\n\naa.audio()\n\n\n                \n                    \n                    Your browser does not support the audio element.\n                \n              \n\n\n\naa[:5], aa.sr\n\n(array([-0.00378457, -0.01689089, -0.01994183, -0.0144542 , -0.02069945]),\n 32000)\n\n\n\ntest_eq(len(aa), 320000)\ntest_eq(aa.sr, 32_000)\ntest_eq(aa.shape, (320000,))",
+    "crumbs": [
+      "core"
+    ]
+  },
+  {
+    "objectID": "core.html#audioarray",
+    "href": "core.html#audioarray",
+    "title": "core",
+    "section": "",
+    "text": "AudioArray is the main audio representation in auditus. It stores audio data as a NumPy array and the sample rate. It provides utilities for displaying and parsing audio.\n\nsource\n\n\n\n AudioArray (a:numpy.ndarray, sr:int)\n\nRepresentation for audio data.\nHere is an example of a pink noise signal.\n\naa = AudioArray(np.cumsum(np.random.normal(0, 0.01, 32_000*10)), 32_000)\naa\n\nAudioArray(a=array([-0.00378457, -0.01689089, -0.01994183, ...,  2.81427755,\n        2.81123667,  2.8191368 ]), sr=32000)\n\n\n\naa.audio()\n\n\n                \n                    \n                    Your browser does not support the audio element.\n                \n              \n\n\n\naa[:5], aa.sr\n\n(array([-0.00378457, -0.01689089, -0.01994183, -0.0144542 , -0.02069945]),\n 32000)\n\n\n\ntest_eq(len(aa), 320000)\ntest_eq(aa.sr, 32_000)\ntest_eq(aa.shape, (320000,))",
+    "crumbs": [
+      "core"
+    ]
+  }
+]
